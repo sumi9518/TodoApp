@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
-import Listitem from './Listitem'
+import Listitem from './Listitem';
+import axios from 'axios'
 
 class App extends React.Component {
 
@@ -13,18 +14,17 @@ class App extends React.Component {
       editingIndex: null,
       notification:null,
 
-      todo : [{
-        id: 1,
-        name: "buy some clothes"
-      }, {
-        id: 2,
-        name: "write some code"
-      },{
-        id:3,
-        name:"make it online"
-      }]
+      todo : []
     };
+  this.apiUrl ='http://5d9076e4b9f5430014c27144.mockapi.io'
 
+  }
+
+  async componentDidMount() {
+  const response = await axios.get(`${this.apiUrl}/todo`);
+  this.setState({
+    todo: response.data
+  })
   }
 
   generateTodoId = () =>{
