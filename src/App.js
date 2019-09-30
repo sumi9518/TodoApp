@@ -18,7 +18,7 @@ class App extends React.Component {
 
             todo: []
         };
-        this.apiUrl = 'http://5d9076e4b9f5430014c27144.mockapi.io'
+        this.apiUrl = 'https://5d9076e4b9f5430014c27144.mockapi.io'
 
     }
 
