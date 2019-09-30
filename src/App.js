@@ -1,5 +1,6 @@
 import React from 'react';
 import './App.css';
+import Loadinggif from './loading.gif';
 import Listitem from './Listitem';
 import axios from 'axios'
 
@@ -13,6 +14,7 @@ class App extends React.Component {
       editing: false,
       editingIndex: null,
       notification:null,
+      loading: true,
 
       todo : []
     };
@@ -22,18 +24,15 @@ class App extends React.Component {
 
   async componentDidMount() {
   const response = await axios.get(`${this.apiUrl}/todo`);
-  this.setState({
-    todo: response.data
-  })
+  setTimeout(()=>{
+    this.setState({
+      todo: response.data,
+      loading: false
+    });
+  },1000);
+
   }
 
-  generateTodoId = () =>{
-    const lastId = this.state.todo[this.state.todo.length -1];
-    if(lastId) {
-      return lastId + 1;
-    }
-    return 1
-  }
 
   userInput = (event) =>{
    this.setState({
@@ -42,19 +41,22 @@ class App extends React.Component {
 
   }
 
-  addTodo =() =>{
-    const myvalue ={
-      name: this.state.newtodo,
-      id: this.generateTodoId()
-    };
+   addTodo = async () =>{
+
+
+   const response = await axios.post(`${this.apiUrl}/todo`,{
+    name : this.state.newtodo
+   });
+
 
     const oldtodo = this.state.todo;
-    oldtodo.push(myvalue);
-    this.setState({
-      todo: oldtodo,
-      newtodo:''
+    oldtodo.push(response.data);
 
-    });
+      this.setState({
+        todo: oldtodo,
+        newtodo:''
+      });
+
     this.alert('Todo Added Successfully')
     }
 
@@ -69,10 +71,14 @@ class App extends React.Component {
       })
     }
 
-  updateTodo = (index) => {
+  updateTodo = async (index) => {
     const getstate = this.state.todo[this.state.editingIndex]; //took it out of state
-    getstate.name = this.state.newtodo; //updated name
+    const response = await  axios.put(`${this.apiUrl}/todo/${getstate.id}`,{
+      name: this.state.newtodo
+    });
+console.log(response.data);
     const oldtodo = this.state.todo;
+    oldtodo[this.state.editingIndex] = response.data;
 
     this.setState({
       todo : oldtodo,
@@ -85,9 +91,12 @@ class App extends React.Component {
 
   }
 
-  deleteTodo = (index) =>{
+  deleteTodo = async (index) =>{
       const oldtodo = this.state.todo;
+      const todo = oldtodo[index];
+      const response = await axios.delete(`${this.apiUrl}/todo/${todo.id}`)
       delete oldtodo[index];
+
 
       this.setState({
         todo: oldtodo,
@@ -137,9 +146,13 @@ render() {
       >
         {this.state.editing ? 'Update Todo' : 'Add Todo'}
       </button>
+      {
+        this.state.loading &&
+            <img src={Loadinggif} />
+      }
 
       {
-        !this.state.editing &&
+        (this.state.loading || !this.state.editing) &&
         <ul className="list- group">
           {this.state.todo.map((item, index) => {
             return <Listitem
