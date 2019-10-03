@@ -14,6 +14,7 @@ class App extends React.Component {
             editing: false,
             editingIndex: null,
             notification: null,
+            type: 'primary',
             loading: true,
 
             todo: []
@@ -57,7 +58,7 @@ class App extends React.Component {
             newtodo: ''
         });
 
-        this.alert('Todo Added Successfully')
+        this.alert('Todo Added Successfully','success')
     }
 
 
@@ -86,7 +87,7 @@ class App extends React.Component {
             editingIndex: null,
             newtodo: ''
         });
-        this.alert('Todo Updated Successfully')
+        this.alert('Todo Updated Successfully','primary')
 
 
     }
@@ -101,13 +102,14 @@ class App extends React.Component {
         this.setState({
             todo: oldtodo,
         });
-        this.alert('Todo Deleted successfully')
+        this.alert('Todo Deleted successfully','danger')
 
     }
 
-    alert = (notification) => {
+    alert = (notification, type) => {
         this.setState({
-            notification
+            notification,
+            type
         });
 
         setTimeout(() => {
@@ -126,7 +128,7 @@ class App extends React.Component {
                 <div className="container">
                     {this.state.notification &&
 
-                    <div className="alert mt-3 alert-success">
+                    <div className={`alert mt-3 alert-${this.state.type}`}>
                         <p>{this.state.notification}</p>
                     </div>
                     }
